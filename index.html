@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1020">
+<title>StockFlow | Inventory Management</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="#" data-page="dashboard"><span class="brand-icon">S</span><span>Stock<span>Flow</span></span></a>
+    <div class="workspace"><span class="workspace-dot"></span> INVENTARIO UNIVERSITARIO</div>
+    <nav class="nav">
+      <div class="nav-label">GENERAL</div>
+      <button class="nav-link active" data-page="dashboard"><span>⌂</span> Panel principal</button>
+      <button class="nav-link" data-page="inventory"><span>▦</span> Inventario <b id="navCount">0</b></button>
+      <button class="nav-link" data-page="categories"><span>◇</span> Categorías</button>
+      <div class="nav-label">CONTROL</div>
+      <button class="nav-link" data-page="movements"><span>⇄</span> Movimientos</button>
+      <button class="nav-link" data-page="reports"><span>▥</span> Reportes</button>
+      <div class="nav-label">SISTEMA</div>
+      <button class="nav-link" data-page="backup"><span>☷</span> Importar / Exportar</button>
+    </nav>
+    <div class="sidebar-bottom"><div class="online"><i></i> Sistema operativo</div><small>StockFlow v3.0 · Local</small></div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <button class="mobile-menu" id="mobileMenu" aria-label="Abrir menú">☰</button>
+      <div class="breadcrumbs"><span>Workspace</span><b>/</b><strong id="crumb">Panel principal</strong></div>
+      <div class="top-actions">
+        <label class="global-search"><span>⌕</span><input id="globalSearch" placeholder="Buscar productos..." autocomplete="off"></label>
+        <span class="top-divider"></span><span class="user-avatar">AD</span><div class="user-info"><strong>Administrador</strong><small>Gestión de inventario</small></div>
+      </div>
+    </header>
+
+    <div class="content">
+      <section class="page active" id="page-dashboard">
+        <div class="page-title"><div><div class="eyebrow">OVERVIEW / 01</div><h1>Panel principal</h1><p>Resumen general del estado de tu inventario.</p></div><button class="btn btn-primary" data-action="new-product">＋ Nuevo producto</button></div>
+        <div class="metric-grid">
+          <article class="metric-card"><div class="metric-head"><span>PRODUCTOS REGISTRADOS</span><i class="metric-symbol green">▦</i></div><strong id="metricProducts">0</strong><small><em class="positive">●</em> Referencias en catálogo</small></article>
+          <article class="metric-card"><div class="metric-head"><span>UNIDADES DISPONIBLES</span><i class="metric-symbol blue">▤</i></div><strong id="metricUnits">0</strong><small>Existencias totales</small></article>
+          <article class="metric-card"><div class="metric-head"><span>STOCK BAJO</span><i class="metric-symbol amber">⚠</i></div><strong id="metricLow">0</strong><small>Requieren atención</small></article>
+          <article class="metric-card"><div class="metric-head"><span>VALOR DEL INVENTARIO</span><i class="metric-symbol violet">$</i></div><strong id="metricValue">$0</strong><small>Valor estimado total</small></article>
+        </div>
+        <div class="dashboard-grid">
+          <article class="surface stock-health">
+            <div class="surface-head"><div><h2>Estado del inventario</h2><p>Distribución de existencias por nivel</p></div><span class="live-tag"><i></i> ACTUALIZADO</span></div>
+            <div class="health-content"><div class="donut" id="stockDonut"><div><strong id="donutTotal">0</strong><small>UNIDADES</small></div></div><div class="legend"><div><i class="lg-green"></i><span>Stock saludable</span><b id="healthyCount">0</b></div><div><i class="lg-amber"></i><span>Stock bajo</span><b id="lowCount">0</b></div><div><i class="lg-red"></i><span>Agotado</span><b id="outCount">0</b></div></div></div>
+          </article>
+          <article class="surface quick-actions"><div class="surface-head"><div><h2>Acciones rápidas</h2><p>Operaciones frecuentes</p></div></div><div class="quick-grid"><button data-action="new-product"><span class="quick-icon qi-green">＋</span><strong>Registrar producto</strong><small>Añadir al inventario</small></button><button data-action="new-movement"><span class="quick-icon qi-blue">⇄</span><strong>Registrar movimiento</strong><small>Entrada o salida</small></button><button data-page="categories"><span class="quick-icon qi-purple">◇</span><strong>Ver categorías</strong><small>Organizar productos</small></button><button data-page="reports"><span class="quick-icon qi-amber">▥</span><strong>Consultar reportes</strong><small>Analizar existencias</small></button></div></article>
+        </div>
+        <div class="dashboard-grid lower-grid">
+          <article class="surface"><div class="surface-head"><div><h2>Productos que requieren atención</h2><p>Referencias en el mínimo o por debajo</p></div><button class="text-btn" data-page="inventory">Ver inventario →</button></div><div class="table-wrap"><table><thead><tr><th>PRODUCTO</th><th>CÓDIGO</th><th>EXISTENCIAS</th><th>MÍNIMO</th><th>ESTADO</th></tr></thead><tbody id="attentionRows"></tbody></table></div><div class="empty-state hidden" id="attentionEmpty">¡Todo en orden! No hay productos con stock bajo.</div></article>
+          <article class="surface"><div class="surface-head"><div><h2>Actividad reciente</h2><p>Últimos movimientos registrados</p></div><button class="text-btn" data-page="movements">Ver todos →</button></div><div class="recent-list" id="recentList"></div></article>
+        </div>
+      </section>
+
+      <section class="page" id="page-inventory">
+        <div class="page-title"><div><div class="eyebrow">CATÁLOGO / 02</div><h1>Inventario</h1><p>Administra productos, cantidades y niveles de stock.</p></div><button class="btn btn-primary" data-action="new-product">＋ Añadir producto</button></div>
+        <div class="surface">
+          <div class="list-toolbar"><div class="list-title"><h2>Todos los productos</h2><span class="count-badge" id="productCount">0</span></div><div class="filters"><label class="searchbox">⌕ <input id="productSearch" placeholder="Buscar nombre o código..."></label><select id="statusFilter"><option value="all">Todos los estados</option><option value="Activo">Activos</option><option value="Inactivo">Inactivos</option></select><select id="categoryFilter"><option value="all">Todas las categorías</option></select></div></div>
+          <div class="table-wrap"><table class="inventory-table"><thead><tr><th>PRODUCTO</th><th>CÓDIGO</th><th>CATEGORÍA</th><th>PRECIO</th><th>STOCK</th><th>ESTADO</th><th>ACCIONES</th></tr></thead><tbody id="productRows"></tbody></table></div>
+          <div class="empty-state hidden" id="productsEmpty">No hay productos que coincidan con la búsqueda.</div>
+        </div>
+      </section>
+
+      <section class="page" id="page-categories">
+        <div class="page-title"><div><div class="eyebrow">ORGANIZACIÓN / 03</div><h1>Categorías</h1><p>Clasifica tus productos para mantener el inventario organizado.</p></div></div>
+        <div class="surface category-create"><div><h2>Nueva categoría</h2><p>Crea una categoría para agrupar productos.</p></div><form id="categoryForm"><input id="categoryName" placeholder="Ej. Equipos de cómputo" maxlength="40" required><button class="btn btn-primary">＋ Crear categoría</button></form></div>
+        <div class="category-grid" id="categoryGrid"></div>
+      </section>
+
+      <section class="page" id="page-movements">
+        <div class="page-title"><div><div class="eyebrow">TRAZABILIDAD / 04</div><h1>Movimientos</h1><p>Controla entradas, salidas y ajustes de existencias.</p></div><button class="btn btn-primary" data-action="new-movement">＋ Registrar movimiento</button></div>
+        <div class="surface"><div class="list-toolbar"><div class="list-title"><h2>Historial de movimientos</h2><span class="count-badge" id="movementCount">0</span></div><div class="filters"><select id="movementFilter"><option value="all">Todos los movimientos</option><option>Entrada</option><option>Salida</option><option>Ajuste</option></select></div></div><div class="table-wrap"><table><thead><tr><th>FECHA</th><th>PRODUCTO</th><th>TIPO</th><th>CANTIDAD</th><th>STOCK RESULTANTE</th><th>OBSERVACIÓN</th></tr></thead><tbody id="movementRows"></tbody></table></div><div class="empty-state hidden" id="movementEmpty">Aún no hay movimientos registrados.</div></div>
+      </section>
+
+      <section class="page" id="page-reports">
+        <div class="page-title"><div><div class="eyebrow">ANÁLISIS / 05</div><h1>Reportes</h1><p>Indicadores y valoración de tu inventario actual.</p></div><button class="btn btn-secondary" data-action="export-csv">↓ Exportar CSV</button></div>
+        <div class="metric-grid report-metrics"><article class="metric-card"><div class="metric-head"><span>VALOR TOTAL</span><i class="metric-symbol violet">$</i></div><strong id="reportValue">$0</strong><small>Precio × unidades</small></article><article class="metric-card"><div class="metric-head"><span>REFERENCIAS ACTIVAS</span><i class="metric-symbol green">▦</i></div><strong id="reportActive">0</strong><small>Productos disponibles</small></article><article class="metric-card"><div class="metric-head"><span>UNIDADES AGOTADAS</span><i class="metric-symbol red">!</i></div><strong id="reportOut">0</strong><small>Requieren reposición</small></article></div>
+        <div class="surface"><div class="surface-head"><div><h2>Valor por categoría</h2><p>Distribución del valor estimado del inventario</p></div></div><div class="bars" id="categoryBars"></div></div>
+      </section>
+
+      <section class="page" id="page-backup">
+        <div class="page-title"><div><div class="eyebrow">DATOS / 06</div><h1>Importar y exportar</h1><p>Respalda tu información o restaura una copia anterior.</p></div></div>
+        <div class="backup-grid">
+          <article class="surface backup-card"><span class="backup-icon qi-green">↓</span><h2>Exportar inventario</h2><p>Descarga tus productos en CSV para abrirlos en Excel o cualquier hoja de cálculo.</p><button class="btn btn-primary" data-action="export-csv">Descargar CSV</button></article>
+          <article class="surface backup-card"><span class="backup-icon qi-blue">⇩</span><h2>Copia de seguridad</h2><p>Guarda productos, categorías y movimientos en un archivo JSON.</p><button class="btn btn-secondary" data-action="backup-json">Descargar copia JSON</button></article>
+          <article class="surface backup-card import-card"><span class="backup-icon qi-purple">↑</span><h2>Restaurar copia</h2><p>Selecciona un archivo JSON generado por StockFlow. La copia reemplazará los datos actuales.</p><label class="file-picker"><input type="file" id="restoreFile" accept=".json,application/json"><span>＋</span><strong>Elegir archivo JSON</strong><small id="restoreName">Ningún archivo seleccionado</small></label><button class="btn btn-primary" id="restoreButton">Importar copia</button></article>
+        </div>
+        <div class="data-note"><strong>Almacenamiento local</strong><span>Los datos se guardan en este navegador. Para compartir el mismo inventario entre varios equipos se necesita conectar una base de datos y un backend.</span></div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<div class="modal-backdrop" id="productModal"><section class="modal"><div class="modal-head"><div><div class="eyebrow">CATÁLOGO</div><h2 id="productModalTitle">Añadir producto</h2></div><button class="icon-btn" data-close="productModal">✕</button></div><form id="productForm"><input type="hidden" id="editId"><div class="form-grid">
+<label class="field"><span>Nombre del producto *</span><input id="fName" required maxlength="80" placeholder="Ej. Portátil Lenovo ThinkPad"></label>
+<label class="field"><span>Código / SKU *</span><input id="fCode" required maxlength="30" placeholder="Ej. LAP001"></label>
+<label class="field"><span>Categoría *</span><select id="fCategory" required></select></label>
+<label class="field"><span>Precio unitario (COP) *</span><input id="fPrice" type="number" min="0" step="1" required placeholder="850000"></label>
+<label class="field"><span>Existencias *</span><input id="fStock" type="number" min="0" step="1" required placeholder="10"></label>
+<label class="field"><span>Stock mínimo *</span><input id="fMin" type="number" min="0" step="1" required value="5"></label>
+<label class="field full"><span>Descripción</span><textarea id="fDescription" rows="2" maxlength="180" placeholder="Descripción breve del producto"></textarea></label>
+<div class="field full"><span>Imagen del producto</span><div class="image-upload"><div class="image-preview" id="imagePreview">▧</div><div class="upload-controls"><label class="file-picker"><input type="file" id="fImage" accept="image/png,image/jpeg,image/webp"><span>＋</span><strong>Elegir imagen</strong><small id="imageName">PNG, JPG o WEBP · Máx. 1 MB</small></label><button type="button" class="text-btn" id="removeImage">Quitar imagen</button></div></div></div>
+</div><div class="modal-foot"><button type="button" class="btn btn-secondary" data-close="productModal">Cancelar</button><button class="btn btn-primary" type="submit">Guardar producto</button></div></form></section></div>
+
+<div class="modal-backdrop" id="movementModal"><section class="modal modal-small"><div class="modal-head"><div><div class="eyebrow">CONTROL DE STOCK</div><h2>Registrar movimiento</h2></div><button class="icon-btn" data-close="movementModal">✕</button></div><form id="movementForm"><div class="form-grid one-col"><label class="field"><span>Producto *</span><select id="mvProduct" required></select></label><label class="field"><span>Tipo de movimiento *</span><select id="mvType"><option>Entrada</option><option>Salida</option><option>Ajuste</option></select></label><label class="field"><span>Cantidad *</span><input id="mvQty" type="number" min="1" step="1" required placeholder="Cantidad"></label><label class="field"><span>Observación</span><textarea id="mvNote" rows="2" placeholder="Motivo o detalle del movimiento"></textarea></label></div><div class="modal-foot"><button type="button" class="btn btn-secondary" data-close="movementModal">Cancelar</button><button class="btn btn-primary">Guardar movimiento</button></div></form></section></div>
+
+<div class="modal-backdrop" id="detailModal"><section class="modal detail-modal"><div class="modal-head"><div><div class="eyebrow">FICHA DEL PRODUCTO</div><h2 id="detailTitle">Detalle del producto</h2></div><button class="icon-btn" data-close="detailModal">✕</button></div><div class="detail-body" id="detailBody"></div><div class="modal-foot" id="detailActions"></div></section></div>
+<div class="modal-backdrop" id="categoryDetailModal"><section class="modal"><div class="modal-head"><div><div class="eyebrow">CLASIFICACIÓN</div><h2 id="categoryDetailTitle">Categoría</h2></div><button class="icon-btn" data-close="categoryDetailModal">✕</button></div><div id="categoryDetailBody" class="category-detail-body"></div><div class="modal-foot"><button class="btn btn-secondary" data-close="categoryDetailModal">Cerrar</button><button class="btn btn-primary" id="categoryAddProduct">＋ Añadir producto</button></div></section></div>
+
+<div class="toast" id="toast"></div>
+<script src="js/app.js"></script>
+</body></html>
